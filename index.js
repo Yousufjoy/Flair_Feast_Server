@@ -26,22 +26,30 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const userCollection = client.db("flairDb").collection("users");
     const menuCollection = client.db("flairDb").collection("menu");
     const reviewsCollection = client.db("flairDb").collection("reviews");
     const cartCollection = client.db("flairDb").collection("carts");
+
+    //users related api
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
     });
 
-    app.delete('/carts/:id', async (req, res) => {
+    app.delete("/carts/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
+      const query = { _id: new ObjectId(id) };
       const result = await cartCollection.deleteOne(query);
       res.send(result);
-    })
-
+    });
 
     app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
